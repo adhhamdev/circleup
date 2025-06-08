@@ -95,11 +95,9 @@ export default function CycleDetailsPage() {
               <TabsTrigger value="members" className="data-[state=active]:bg-[#7ED321] data-[state=active]:text-black">
                 Members
               </TabsTrigger>
-              {isAdmin && (
-                <TabsTrigger value="admin" className="data-[state=active]:bg-[#7ED321] data-[state=active]:text-black">
-                  Admin
-                </TabsTrigger>
-              )}
+              <TabsTrigger value="admin" className="data-[state=active]:bg-[#7ED321] data-[state=active]:text-black">
+                Admin
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -230,11 +228,15 @@ export default function CycleDetailsPage() {
               </div>
             </TabsContent>
 
-            {isAdmin && (
-              <TabsContent value="admin">
+            <TabsContent value="admin">
+              {isAdmin ? (
                 <AdminDashboard cycle={cycle} isAdmin={isAdmin} />
-              </TabsContent>
-            )}
+              ) : (
+                <div className="text-center text-gray-400 py-8">
+                  <p>Admin access required</p>
+                </div>
+              )}
+            </TabsContent>
           </Tabs>
         </div>
       </div>

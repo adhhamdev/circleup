@@ -67,7 +67,7 @@ export default function DashboardPage() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Upcoming Payments</h2>
               <div className="space-y-4">
-                {upcomingPayments.map((payment, index) => (
+                {upcomingPayments.map((payment) => (
                   <Card key={payment.id} className="rosca-card border-0 rounded-2xl">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
