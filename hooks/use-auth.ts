@@ -34,15 +34,18 @@ export function useAuth() {
   }, [])
 
   const signUp = async (fullName: string, contactNumber: string, password: string) => {
-    const { user: newUser, session: newSession } = await AuthService.signUp(fullName, contactNumber, password)
-    setUser(newUser)
-    setSession(newSession)
+    return await AuthService.signUpWithPhone(fullName, contactNumber, password)
   }
 
-  const signIn = async (contactNumber: string, password: string) => {
-    const { user: signedInUser, session: newSession } = await AuthService.signIn(contactNumber, password)
-    setUser(signedInUser)
+  const signIn = async (contactNumber: string) => {
+    return await AuthService.signInWithPhone(contactNumber)
+  }
+
+  const verifyOtp = async (phone: string, token: string, type: "sms" | "phone_change" = "sms") => {
+    const { user: verifiedUser, session: newSession } = await AuthService.verifyOtp(phone, token, type)
+    setUser(verifiedUser)
     setSession(newSession)
+    return { user: verifiedUser, session: newSession }
   }
 
   const signOut = async () => {
@@ -51,5 +54,5 @@ export function useAuth() {
     setSession(null)
   }
 
-  return { user, session, loading, signUp, signIn, signOut }
+  return { user, session, loading, signUp, signIn, verifyOtp, signOut }
 }
