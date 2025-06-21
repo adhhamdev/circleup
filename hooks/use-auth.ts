@@ -28,24 +28,36 @@ export function useAuth() {
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
+
+      // Create user record in database after email confirmation
+      if (event === "SIGNED_IN" && session?.user && session.user.email_confirmed_at) {
+        const { error } = await supabase.from("users").upsert({
+          id: session.user.id,
+          full_name: session.user.user_metadata?.full_name || "",
+          email: session.user.email || "",
+          password_hash: "supabase_managed",
+        })
+
+        if (error) console.error("Error creating user record:", error)
+      }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (fullName: string, contactNumber: string, password: string) => {
-    return await AuthService.signUpWithPhone(fullName, contactNumber, password)
+  const signUp = async (fullName: string, email: string, password: string) => {
+    return await AuthService.signUpWithEmail(fullName, email, password)
   }
 
-  const signIn = async (contactNumber: string) => {
-    return await AuthService.signInWithPhone(contactNumber)
-  }
-
-  const verifyOtp = async (phone: string, token: string, type: "sms" | "phone_change" = "sms") => {
-    const { user: verifiedUser, session: newSession } = await AuthService.verifyOtp(phone, token, type)
-    setUser(verifiedUser)
+  const signIn = async (email: string, password: string) => {
+    const { user: signedInUser, session: newSession } = await AuthService.signInWithEmail(email, password)
+    setUser(signedInUser)
     setSession(newSession)
-    return { user: verifiedUser, session: newSession }
+    return { user: signedInUser, session: newSession }
+  }
+
+  const resendConfirmation = async (email: string) => {
+    return await AuthService.resendConfirmation(email)
   }
 
   const signOut = async () => {
@@ -54,5 +66,5 @@ export function useAuth() {
     setSession(null)
   }
 
-  return { user, session, loading, signUp, signIn, verifyOtp, signOut }
+  return { user, session, loading, signUp, signIn, resendConfirmation, signOut }
 }
