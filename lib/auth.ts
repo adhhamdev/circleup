@@ -17,6 +17,9 @@ export class AuthService {
 
       if (error) throw error
 
+      // Note: User record in public.users table will be created automatically
+      // by the database trigger when the auth user is created
+
       return { user: data.user, session: data.session }
     } catch (error) {
       console.error("Sign up error:", error)
@@ -52,6 +55,27 @@ export class AuthService {
       if (error) throw error
     } catch (error) {
       console.error("Resend confirmation error:", error)
+      throw error
+    }
+  }
+
+  static async deleteAccount() {
+    try {
+      // Get current user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) throw new Error("No user found")
+
+      // Delete the user (this will trigger cascade deletion)
+      const { error } = await supabase.rpc("delete_user_account")
+
+      if (error) throw error
+
+      // Sign out after deletion
+      await this.signOut()
+    } catch (error) {
+      console.error("Error deleting account:", error)
       throw error
     }
   }

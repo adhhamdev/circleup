@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CircleUp - Payout Notification</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #7ED321 0%, #6BC91A 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .celebration {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .payout-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2D4A3A;
+            margin-bottom: 20px;
+        }
+        .payout-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .payout-card {
+            background: linear-gradient(135deg, #2D4A3A 0%, #1a2e22 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .payout-amount {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #7ED321;
+        }
+        .payout-details {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #7ED321;
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .circle-progress {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .progress-title {
+            font-weight: bold;
+            color: #2D4A3A;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .progress-bar {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #7ED321 0%, #6BC91A 100%);
+            height: 100%;
+            width: 25%;
+            border-radius: 10px;
+        }
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        .footer-text {
+            color: #666;
+            font-size: 14px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            .header, .content, .footer {
+                padding: 30px 20px;
+            }
+            .payout-amount {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="celebration">🎉</div>
+            <div class="logo">Circle<span style="color: #2D4A3A;">Up</span></div>
+        </div>
+        
+        <div class="content">
+            <h1 class="payout-title">Congratulations! It's Your Turn!</h1>
+            <p class="payout-text">
+                Great news! You're scheduled to receive your payout from your CircleUp savings circle. Your commitment to regular contributions has paid off!
+            </p>
+            
+            <div class="payout-card">
+                <div class="payout-amount">$2,000</div>
+                <div class="payout-details">Scheduled for March 20, 2024</div>
+            </div>
+            
+            <div class="circle-progress">
+                <div class="progress-title">Circle Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">Round 3 of 12 • 25% Complete</div>
+            </div>
+            
+            <a href="#" class="cta-button">View Circle Details</a>
+            
+            <p class="payout-text">
+                Your payout will be processed automatically on the scheduled date. Thank you for being a committed member of your savings community and helping others achieve their financial goals too!
+            </p>
+            
+            <p class="payout-text">
+                <strong>What's Next?</strong><br>
+                Continue making your monthly contributions to support other members and maintain the circle's momentum. Together, we're building stronger financial futures!
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p class="footer-text">
+                <strong>CircleUp</strong> - Celebrating your financial milestones<br>
+                Questions about your payout? Contact us at <a href="mailto:support@circleup.com" style="color: #7ED321;">support@circleup.com</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
