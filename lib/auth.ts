@@ -1,16 +1,6 @@
 import { supabase } from "./supabase"
 import type { User } from "@supabase/supabase-js"
 
-export interface AuthUser {
-  id: string
-  email?: string
-  phone?: string
-  user_metadata: {
-    full_name?: string
-    contact_number?: string
-  }
-}
-
 export class AuthService {
   static async signUp(fullName: string, contactNumber: string, password: string) {
     try {
@@ -73,9 +63,10 @@ export class AuthService {
     return user
   }
 
-  static onAuthStateChange(callback: (user: User | null) => void) {
-    return supabase.auth.onAuthStateChange((event, session) => {
-      callback(session?.user ?? null)
-    })
+  static async getSession() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    return session
   }
 }

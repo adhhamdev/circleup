@@ -39,6 +39,15 @@ export default function ProfilePage() {
     { icon: Lock, label: "Privacy policy", href: "/support/privacy" },
   ]
 
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      router.push("/")
+    } catch (error) {
+      console.error("Error signing out:", error)
+    }
+  }
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen rosca-bg text-white pb-20">
@@ -55,7 +64,9 @@ export default function ProfilePage() {
               <div className="relative inline-block">
                 <Avatar className="w-24 h-24 border-4 border-[#7ED321]">
                   <AvatarImage src="/images/profile-avatar.png" />
-                  <AvatarFallback>SC</AvatarFallback>
+                  <AvatarFallback className="bg-[#7ED321] text-black text-2xl font-bold">
+                    {user?.user_metadata?.full_name?.charAt(0) || "U"}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#7ED321] rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-black" />
@@ -106,10 +117,7 @@ export default function ProfilePage() {
 
             <div className="pt-4">
               <Button
-                onClick={async () => {
-                  await signOut()
-                  router.push("/")
-                }}
+                onClick={handleSignOut}
                 className="w-full rosca-green hover:bg-[#6BC91A] text-black font-semibold py-4 text-lg rounded-2xl"
               >
                 <LogOut className="w-5 h-5 mr-2" />

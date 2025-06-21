@@ -1,56 +1,91 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { CycleService } from "@/lib/cycles"
+import { supabase } from "@/lib/supabase"
 import { useAuth } from "./use-auth"
+
+interface Cycle {
+  id: string
+  name: string
+  max_members: number
+  contribution_amount: number
+  status: string
+}
+
+interface CycleMember {
+  id: string
+  cycles: Cycle
+}
+
+interface Payment {
+  id: string
+  amount: number
+  due_date: string
+  cycles: Cycle
+}
 
 export function useCycles() {
   const { user } = useAuth()
-  const [cycles, setCycles] = useState<any[]>([])
-  const [upcomingPayments, setUpcomingPayments] = useState<any[]>([])
+  const [cycles, setCycles] = useState<CycleMember[]>([])
+  const [upcomingPayments, setUpcomingPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (user) {
-      loadUserData()
+    if (!user) {
+      setLoading(false)
+      return
     }
+
+    const fetchCycles = async () => {
+      try {
+        // Fetch user's cycles
+        const { data: cycleMembers, error: cyclesError } = await supabase
+          .from("cycle_members")
+          .select(`
+            id,
+            cycles (
+              id,
+              name,
+              max_members,
+              contribution_amount,
+              status
+            )
+          `)
+          .eq("user_id", user.id)
+
+        if (cyclesError) throw cyclesError
+
+        setCycles(cycleMembers || [])
+
+        // Fetch upcoming payments
+        const { data: payments, error: paymentsError } = await supabase
+          .from("payments")
+          .select(`
+            id,
+            amount,
+            due_date,
+            cycles (
+              id,
+              name
+            )
+          `)
+          .eq("user_id", user.id)
+          .eq("status", "pending")
+          .gte("due_date", new Date().toISOString())
+          .order("due_date", { ascending: true })
+
+        if (paymentsError) throw paymentsError
+
+        setUpcomingPayments(payments || [])
+      } catch (error) {
+        console.error("Error fetching cycles:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCycles()
   }, [user])
 
-  const loadUserData = async () => {
-    if (!user) return
-
-    try {
-      const [cyclesData, paymentsData] = await Promise.all([
-        CycleService.getUserCycles(user.id),
-        CycleService.getUpcomingPayments(user.id),
-      ])
-
-      setCycles(cyclesData || [])
-      setUpcomingPayments(paymentsData || [])
-    } catch (error) {
-      console.error("Error loading user data:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const makePayment = async (paymentId: string) => {
-    try {
-      await CycleService.makePayment(paymentId)
-      // Reload data after payment
-      await loadUserData()
-      return true
-    } catch (error) {
-      console.error("Error making payment:", error)
-      return false
-    }
-  }
-
-  return {
-    cycles,
-    upcomingPayments,
-    loading,
-    makePayment,
-    refreshData: loadUserData,
-  }
+  return { cycles, upcomingPayments, loading }
 }

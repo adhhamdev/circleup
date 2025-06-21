@@ -1,136 +1,98 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Bell, X, Calendar, DollarSign } from "lucide-react"
-
-interface Notification {
-  id: string
-  type: "payment_due" | "payment_received" | "cycle_update"
-  title: string
-  message: string
-  timestamp: Date
-  read: boolean
-}
+import { Bell, Check, CheckCheck } from "lucide-react"
+import { useNotifications } from "@/hooks/use-notifications"
 
 export function NotificationCenter() {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "payment_due",
-      title: "Payment Due Soon",
-      message: "Your payment for Savings Circle is due in 2 days",
-      timestamp: new Date(),
-      read: false,
-    },
-    {
-      id: "2",
-      type: "cycle_update",
-      title: "New Member Joined",
-      message: "Sarah Johnson joined your Investment Group",
-      timestamp: new Date(Date.now() - 86400000),
-      read: false,
-    },
-  ])
+  const { notifications, unreadCount, loading, markAsRead, markAllAsRead } = useNotifications()
   const [isOpen, setIsOpen] = useState(false)
 
-  const unreadCount = notifications.filter((n) => !n.read).length
-
-  const markAsRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
-  }
-
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+  if (loading) {
+    return (
+      <Button size="icon" variant="ghost" className="relative">
+        <Bell className="w-5 h-5" />
+      </Button>
+    )
   }
 
   return (
-    <>
+    <div className="relative">
       <Button
-        variant="ghost"
         size="icon"
-        onClick={() => setIsOpen(true)}
+        variant="ghost"
+        onClick={() => setIsOpen(!isOpen)}
         className="relative text-white hover:bg-white/10"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            {unreadCount}
+            {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50">
-          <Card className="w-full max-w-sm rosca-card border-0 mt-16">
-            <CardContent className="p-0">
-              <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h3 className="text-lg font-semibold text-white">Notifications</h3>
-                <div className="flex items-center space-x-2">
-                  {unreadCount > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={markAllAsRead}
-                      className="text-[#7ED321] hover:bg-white/10"
-                    >
-                      Mark all read
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsOpen(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <X className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
+        <div className="absolute right-0 top-12 w-80 bg-[#1A2E22] rounded-2xl shadow-lg z-50 max-h-96 overflow-hidden">
+          <div className="p-4 border-b border-gray-600">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-white">Notifications</h3>
+              {unreadCount > 0 && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={markAllAsRead}
+                  className="text-[#7ED321] hover:bg-[#7ED321]/10"
+                >
+                  <CheckCheck className="w-4 h-4 mr-1" />
+                  Mark all read
+                </Button>
+              )}
+            </div>
+          </div>
 
-              <div className="max-h-96 overflow-y-auto">
-                {notifications.length === 0 ? (
-                  <div className="p-8 text-center text-gray-400">
-                    <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No notifications yet</p>
-                  </div>
-                ) : (
-                  notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`p-4 border-b border-gray-700 last:border-b-0 cursor-pointer hover:bg-white/5 ${
-                        !notification.read ? "bg-white/5" : ""
-                      }`}
-                      onClick={() => markAsRead(notification.id)}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 mt-1">
-                          {notification.type === "payment_due" && <Calendar className="w-5 h-5 text-yellow-500" />}
-                          {notification.type === "payment_received" && (
-                            <DollarSign className="w-5 h-5 text-green-500" />
-                          )}
-                          {notification.type === "cycle_update" && <Bell className="w-5 h-5 text-blue-500" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-medium text-white truncate">{notification.title}</h4>
-                            {!notification.read && (
-                              <div className="w-2 h-2 bg-[#7ED321] rounded-full flex-shrink-0 ml-2"></div>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-400 mt-1">{notification.message}</p>
-                          <p className="text-xs text-gray-500 mt-2">{notification.timestamp.toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
+          <div className="max-h-80 overflow-y-auto">
+            {notifications.length === 0 ? (
+              <div className="p-6 text-center text-gray-400">
+                <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No notifications yet</p>
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`p-4 border-b border-gray-700 last:border-b-0 ${
+                    !notification.read ? "bg-[#7ED321]/5" : ""
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-white text-sm">{notification.title}</h4>
+                      <p className="text-gray-400 text-sm mt-1">{notification.message}</p>
+                      <p className="text-gray-500 text-xs mt-2">
+                        {new Date(notification.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    {!notification.read && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => markAsRead(notification.id)}
+                        className="text-[#7ED321] hover:bg-[#7ED321]/10 ml-2"
+                      >
+                        <Check className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
-    </>
+
+      {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
+    </div>
   )
 }
